@@ -9,12 +9,19 @@ const req = (key: string): string => {
   return v;
 };
 
+const defaultCorsOrigins = 'http://localhost:5173,http://localhost:4173,http://localhost:3000,http://localhost:4000,http://localhost';
+const frontendUrl = opt('FRONTEND_URL');
+const corsOriginsFromEnv = opt('CORS_ORIGINS', defaultCorsOrigins);
+
 export const config = {
   env: opt('NODE_ENV', 'development'),
   port: parseInt(opt('PORT', '4000'), 10),
   apiUrl: opt('API_URL', 'http://localhost:4000'),
   webUrl: opt('WEB_URL', 'http://localhost:5173'),
-  corsOrigins: opt('CORS_ORIGINS', 'http://localhost:5173,http://localhost:4173,http://localhost:3000,http://localhost:4000,http://localhost').split(',').map((value) => value.trim()).filter(Boolean),
+  corsOrigins: Array.from(new Set([
+    ...corsOriginsFromEnv.split(',').map((value) => value.trim()).filter(Boolean),
+    ...(frontendUrl ? [frontendUrl] : []),
+  ])),
   isDev: opt('NODE_ENV', 'development') === 'development',
   isProd: opt('NODE_ENV', 'development') === 'production',
   db: { url: req('DATABASE_URL') },

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProperties, getProperty, createProperty, updateProperty, deleteProperty, getPropertyStats, addPropertyManager, removePropertyManager, getPropertyUnits, createUnit, updateUnit, getMapProperties, generatePropertySummary } from '../controllers/properties.controller';
+import { getProperties, getProperty, createProperty, updateProperty, deleteProperty, getPropertyStats, addPropertyManager, removePropertyManager, getPropertyUnits, createUnit, updateUnit, getMapProperties, generatePropertySummary, getAllLeases } from '../controllers/properties.controller';
 import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '@prisma/client';
 const router = Router();
