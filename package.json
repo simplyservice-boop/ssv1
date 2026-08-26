@@ -1,0 +1,23 @@
+{
+  "name": "simply-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simply Service — Unified Property Operations Platform",
+  "workspaces": ["apps/*","packages/*"],
+  "scripts": {
+    "dev": "concurrently \"yarn workspace @simply-service/api dev\" \"yarn workspace @simply-service/web dev\"",
+    "build": "yarn workspace @simply-service/shared build && yarn workspace @simply-service/api build && yarn workspace @simply-service/web build",
+    "start": "yarn workspace @simply-service/api start",
+    "typecheck": "yarn workspace @simply-service/shared typecheck && tsc --noEmit -p apps/api/tsconfig.json && tsc --noEmit -p apps/web/tsconfig.json",
+    "db:generate": "yarn workspace @simply-service/api db:generate",
+    "db:migrate": "yarn workspace @simply-service/api db:migrate",
+    "db:seed": "yarn workspace @simply-service/api db:seed",
+    "smoke:platform": "node scripts/smoke-platform.mjs",
+    "smoke": "node scripts/smoke-test.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": { "node": ">=20.0.0", "yarn": ">=1.22.0" }
+}

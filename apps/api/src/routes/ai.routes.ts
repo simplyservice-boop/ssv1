@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { chatWithAssistant, summarizeDocument, generateWorkOrderSuggestion, matchContractors, generatePortfolioReport } from '../controllers/ai.controller';
+import { authenticate } from '../middleware/auth';
+import { aiLimiter } from '../middleware/rateLimiter';
+const router = Router();
+router.use(authenticate);
+router.use(aiLimiter);
+router.post('/chat',                chatWithAssistant);
+router.post('/summarize-document',  summarizeDocument);
+router.post('/work-order-suggestion', generateWorkOrderSuggestion);
+router.post('/match-contractors',   matchContractors);
+router.post('/portfolio-report',    generatePortfolioReport);
+export default router;

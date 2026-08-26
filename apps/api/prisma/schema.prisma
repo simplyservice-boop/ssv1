@@ -1,0 +1,580 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  TENANT
+  CONTRACTOR
+  VENDOR
+  UTILITY_PROVIDER
+  INSURANCE_PARTNER
+  FINANCIAL_INSTITUTION
+  ENTERPRISE
+  MUNICIPAL_PARTNER
+  ADMIN
+}
+
+enum PropertyType {
+  SINGLE_FAMILY
+  MULTI_FAMILY
+  APARTMENT_COMPLEX
+  COMMERCIAL_OFFICE
+  RETAIL
+  INDUSTRIAL
+  MIXED_USE
+  MUNICIPAL
+  LAND
+}
+
+enum PropertyStatus {
+  ACTIVE
+  INACTIVE
+  UNDER_CONSTRUCTION
+  FOR_SALE
+  FOR_LEASE
+  ARCHIVED
+}
+
+enum WorkOrderStatus {
+  DRAFT
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  ON_HOLD
+  PENDING_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum WorkOrderPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+  EMERGENCY
+}
+
+enum WorkOrderCategory {
+  PLUMBING
+  ELECTRICAL
+  HVAC
+  ROOFING
+  STRUCTURAL
+  LANDSCAPING
+  CLEANING
+  PAINTING
+  FLOORING
+  APPLIANCES
+  PEST_CONTROL
+  SECURITY
+  GENERAL_MAINTENANCE
+  INSPECTION
+  OTHER
+}
+
+enum InspectionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum InspectionType {
+  MOVE_IN
+  MOVE_OUT
+  ROUTINE
+  ANNUAL
+  CODE_COMPLIANCE
+  SAFETY
+  INSURANCE
+  CUSTOM
+}
+
+enum LeaseStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  PENDING_RENEWAL
+}
+
+enum TransactionType {
+  RENT_PAYMENT
+  SECURITY_DEPOSIT
+  MAINTENANCE_FEE
+  LATE_FEE
+  REFUND
+  CONTRACTOR_PAYMENT
+  UTILITY_PAYMENT
+  OTHER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum DocumentType {
+  LEASE
+  INSPECTION_REPORT
+  WORK_ORDER_ATTACHMENT
+  INSURANCE_POLICY
+  PERMIT
+  WARRANTY
+  INVOICE
+  RECEIPT
+  PHOTO
+  FLOOR_PLAN
+  OTHER
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  IN_APP
+  PUSH
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  phone         String?
+  avatarUrl     String?
+  role          UserRole  @default(TENANT)
+  isActive      Boolean   @default(true)
+  isVerified    Boolean   @default(false)
+  verifyToken   String?
+  resetToken    String?
+  resetTokenExp DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  ownedProperties     Property[]           @relation("PropertyOwner")
+  managedProperties   PropertyManager[]
+  tenancies           Lease[]              @relation("TenantLease")
+  contractorProfile   ContractorProfile?
+  workOrdersCreated   WorkOrder[]          @relation("WorkOrderCreator")
+  workOrdersAssigned  WorkOrder[]          @relation("WorkOrderAssignee")
+  messagesSent        Message[]            @relation("MessageSender")
+  conversations       MessageParticipant[]
+  documents           Document[]
+  transactions        Transaction[]
+  inspectionsCreated  Inspection[]         @relation("InspectionCreator")
+  notifications       Notification[]
+  organizationMembers OrganizationMember[]
+  refreshTokens       RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  type      String
+  logoUrl   String?
+  website   String?
+  phone     String?
+  email     String?
+  address   String?
+  city      String?
+  state     String?
+  zip       String?
+  country   String   @default("US")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   OrganizationMember[]
+  properties PropertyOrganization[]
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  role           String
+  joinedAt       DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
+
+model Property {
+  id            String         @id @default(cuid())
+  ownerId       String
+  name          String
+  type          PropertyType
+  status        PropertyStatus @default(ACTIVE)
+  address       String
+  city          String
+  state         String
+  zip           String
+  country       String         @default("US")
+  latitude      Float?
+  longitude     Float?
+  yearBuilt     Int?
+  sqFootage     Float?
+  lotSize       Float?
+  bedrooms      Int?
+  bathrooms     Float?
+  units         Int            @default(1)
+  parkingSpaces Int?
+  description   String?
+  coverImageUrl String?
+  purchasePrice Float?
+  purchaseDate  DateTime?
+  currentValue  Float?
+  isListed      Boolean        @default(false)
+  aiSummary     String?
+  aiSummaryAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  owner         User                  @relation("PropertyOwner", fields: [ownerId], references: [id])
+  managers      PropertyManager[]
+  units_rel     Unit[]
+  leases        Lease[]
+  workOrders    WorkOrder[]
+  inspections   Inspection[]
+  documents     Document[]
+  transactions  Transaction[]
+  messages      Conversation[]
+  organizations PropertyOrganization[]
+  photos        PropertyPhoto[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([latitude, longitude])
+  @@map("properties")
+}
+
+model PropertyPhoto {
+  id         String   @id @default(cuid())
+  propertyId String
+  url        String
+  caption    String?
+  isPrimary  Boolean  @default(false)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  @@map("property_photos")
+}
+
+model PropertyManager {
+  id         String   @id @default(cuid())
+  propertyId String
+  managerId  String
+  assignedAt DateTime @default(now())
+  isActive   Boolean  @default(true)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  manager    User     @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  @@unique([propertyId, managerId])
+  @@map("property_managers")
+}
+
+model PropertyOrganization {
+  id             String       @id @default(cuid())
+  propertyId     String
+  organizationId String
+  relationship   String
+  accountNumber  String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  property       Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  @@map("property_organizations")
+}
+
+model Unit {
+  id          String    @id @default(cuid())
+  propertyId  String
+  unitNumber  String
+  floor       Int?
+  sqFootage   Float?
+  bedrooms    Int?
+  bathrooms   Float?
+  monthlyRent Float?
+  isAvailable Boolean   @default(true)
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  leases      Lease[]
+  workOrders  WorkOrder[]
+  @@unique([propertyId, unitNumber])
+  @@map("units")
+}
+
+model Lease {
+  id                String      @id @default(cuid())
+  propertyId        String
+  unitId            String?
+  tenantId          String
+  status            LeaseStatus @default(DRAFT)
+  startDate         DateTime
+  endDate           DateTime
+  monthlyRent       Float
+  securityDeposit   Float?
+  petDeposit        Float?
+  lateFeeAmount     Float?
+  lateFeeGraceDays  Int         @default(5)
+  terms             String?
+  signedAt          DateTime?
+  terminatedAt      DateTime?
+  terminationReason String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  property          Property    @relation(fields: [propertyId], references: [id])
+  unit              Unit?       @relation(fields: [unitId], references: [id])
+  tenant            User        @relation("TenantLease", fields: [tenantId], references: [id])
+  documents         Document[]
+  transactions      Transaction[]
+  @@index([propertyId])
+  @@index([tenantId])
+  @@index([status])
+  @@map("leases")
+}
+
+model WorkOrder {
+  id            String            @id @default(cuid())
+  propertyId    String
+  unitId        String?
+  creatorId     String
+  assigneeId    String?
+  title         String
+  description   String
+  status        WorkOrderStatus   @default(OPEN)
+  priority      WorkOrderPriority @default(MEDIUM)
+  category      WorkOrderCategory @default(GENERAL_MAINTENANCE)
+  estimatedCost Float?
+  actualCost    Float?
+  scheduledAt   DateTime?
+  startedAt     DateTime?
+  completedAt   DateTime?
+  dueDate       DateTime?
+  notes         String?
+  aiSuggestion  String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  property      Property          @relation(fields: [propertyId], references: [id])
+  unit          Unit?             @relation(fields: [unitId], references: [id])
+  creator       User              @relation("WorkOrderCreator", fields: [creatorId], references: [id])
+  assignee      User?             @relation("WorkOrderAssignee", fields: [assigneeId], references: [id])
+  documents     Document[]
+  comments      WorkOrderComment[]
+  transactions  Transaction[]
+  @@index([propertyId])
+  @@index([status])
+  @@index([assigneeId])
+  @@map("work_orders")
+}
+
+model WorkOrderComment {
+  id          String    @id @default(cuid())
+  workOrderId String
+  authorId    String
+  content     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  @@map("work_order_comments")
+}
+
+model ContractorProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  companyName     String?
+  licenseNumber   String?
+  licenseState    String?
+  licenseExpiry   DateTime?
+  insurancePolicy String?
+  insuranceExpiry DateTime?
+  rating          Float?
+  reviewCount     Int       @default(0)
+  specialties     String[]
+  serviceRadius   Int?
+  hourlyRate      Float?
+  availability    Json?
+  bio             String?
+  isVerified      Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("contractor_profiles")
+}
+
+model Inspection {
+  id          String           @id @default(cuid())
+  propertyId  String
+  creatorId   String
+  type        InspectionType
+  status      InspectionStatus @default(SCHEDULED)
+  scheduledAt DateTime
+  completedAt DateTime?
+  inspector   String?
+  overallScore Float?
+  findings    Json?
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  property    Property         @relation(fields: [propertyId], references: [id])
+  creator     User             @relation("InspectionCreator", fields: [creatorId], references: [id])
+  documents   Document[]
+  items       InspectionItem[]
+  @@index([propertyId])
+  @@map("inspections")
+}
+
+model InspectionItem {
+  id           String     @id @default(cuid())
+  inspectionId String
+  area         String
+  item         String
+  condition    String
+  notes        String?
+  photoUrls    String[]
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  @@map("inspection_items")
+}
+
+model Document {
+  id           String       @id @default(cuid())
+  uploaderId   String
+  propertyId   String?
+  workOrderId  String?
+  inspectionId String?
+  leaseId      String?
+  name         String
+  type         DocumentType
+  mimeType     String
+  size         Int
+  url          String
+  s3Key        String
+  description  String?
+  expiresAt    DateTime?
+  isPrivate    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  uploader     User         @relation(fields: [uploaderId], references: [id])
+  property     Property?    @relation(fields: [propertyId], references: [id])
+  workOrder    WorkOrder?   @relation(fields: [workOrderId], references: [id])
+  inspection   Inspection?  @relation(fields: [inspectionId], references: [id])
+  lease        Lease?       @relation(fields: [leaseId], references: [id])
+  @@index([propertyId])
+  @@map("documents")
+}
+
+model Conversation {
+  id          String    @id @default(cuid())
+  propertyId  String?
+  subject     String?
+  isGroup     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  property    Property? @relation(fields: [propertyId], references: [id])
+  messages    Message[]
+  participants MessageParticipant[]
+  @@map("conversations")
+}
+
+model MessageParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  joinedAt       DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([conversationId, userId])
+  @@map("message_participants")
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  status         MessageStatus @default(SENT)
+  attachmentUrls String[]
+  createdAt      DateTime      @default(now())
+  editedAt       DateTime?
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User          @relation("MessageSender", fields: [senderId], references: [id])
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  propertyId  String
+  userId      String
+  workOrderId String?
+  leaseId     String?
+  type        TransactionType
+  status      TransactionStatus @default(PENDING)
+  amount      Float
+  currency    String            @default("USD")
+  description String?
+  stripeId    String?
+  receiptUrl  String?
+  dueDate     DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  property    Property          @relation(fields: [propertyId], references: [id])
+  user        User              @relation(fields: [userId], references: [id])
+  workOrder   WorkOrder?        @relation(fields: [workOrderId], references: [id])
+  lease       Lease?            @relation(fields: [leaseId], references: [id])
+  @@index([propertyId])
+  @@index([status])
+  @@map("transactions")
+}
+
+model Notification {
+  id        String              @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  type      String
+  channel   NotificationChannel
+  isRead    Boolean             @default(false)
+  data      Json?
+  createdAt DateTime            @default(now())
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, isRead])
+  @@map("notifications")
+}

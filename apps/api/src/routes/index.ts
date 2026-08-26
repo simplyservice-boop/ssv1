@@ -1,0 +1,25 @@
+import { Router } from 'express';
+import authRoutes        from './auth.routes';
+import propertiesRoutes  from './properties.routes';
+import workOrdersRoutes  from './workOrders.routes';
+import usersRoutes       from './users.routes';
+import documentsRoutes   from './documents.routes';
+import messagesRoutes    from './messages.routes';
+import financialRoutes   from './financial.routes';
+import inspectionsRoutes from './inspections.routes';
+import contractorsRoutes from './contractors.routes';
+import aiRoutes          from './ai.routes';
+import notificationsRoutes from './notifications.routes';
+
+export const apiRouter = Router();
+apiRouter.use('/auth',          authRoutes);
+apiRouter.use('/properties',    propertiesRoutes);
+apiRouter.use('/work-orders',   workOrdersRoutes);
+apiRouter.use('/users',         usersRoutes);
+apiRouter.use('/documents',     documentsRoutes);
+apiRouter.use('/messages',      messagesRoutes);
+apiRouter.use('/financial',     financialRoutes);
+apiRouter.use('/inspections',   inspectionsRoutes);
+apiRouter.use('/contractors',   contractorsRoutes);
+apiRouter.use('/ai',            aiRoutes);
+apiRouter.use('/notifications', notificationsRoutes);

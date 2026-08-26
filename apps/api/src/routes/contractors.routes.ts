@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { getContractors, getContractor, getContractorByUser, updateContractorProfile, getContractorWorkOrders } from '../controllers/contractors.controller';
+import { authenticate } from '../middleware/auth';
+const router = Router();
+router.use(authenticate);
+router.get('/',         getContractors);
+router.get('/me',       getContractorByUser);
+router.get('/:id',      getContractor);
+router.put('/profile',  updateContractorProfile);
+router.get('/work-orders', getContractorWorkOrders);
+export default router;

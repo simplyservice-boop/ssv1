@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { getDocuments, getDocument, createDocument, deleteDocument, getSignedUploadUrl } from '../controllers/documents.controller';
+import { authenticate } from '../middleware/auth';
+import { uploadLimiter } from '../middleware/rateLimiter';
+const router = Router();
+router.use(authenticate);
+router.get('/',           getDocuments);
+router.get('/:id',        getDocument);
+router.post('/',          uploadLimiter, createDocument);
+router.post('/signed-url', uploadLimiter, getSignedUploadUrl);
+router.delete('/:id',     deleteDocument);
+export default router;

@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { getConversations, getConversation, createConversation, sendMessage, markRead, getMessages } from '../controllers/messages.controller';
+import { authenticate } from '../middleware/auth';
+const router = Router();
+router.use(authenticate);
+router.get('/conversations',                  getConversations);
+router.post('/conversations',                 createConversation);
+router.get('/conversations/:id',              getConversation);
+router.get('/conversations/:id/messages',     getMessages);
+router.post('/conversations/:id/messages',    sendMessage);
+router.patch('/conversations/:id/read',       markRead);
+export default router;

@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import { getUsers, getUser, getCurrentUser, updateUser, updatePassword, deleteUser, uploadAvatar, updateCurrentUser, updateCurrentPassword } from '../controllers/users.controller';
+import { authenticate, authorize } from '../middleware/auth';
+import { UserRole } from '@prisma/client';
+const router = Router();
+router.use(authenticate);
+router.get('/me',          getCurrentUser);
+router.patch('/me',        updateCurrentUser);
+router.patch('/me/password', updateCurrentPassword);
+router.get('/',            authorize(UserRole.ADMIN, UserRole.OWNER, UserRole.MANAGER), getUsers);
+router.get('/:id',         getUser);
+router.put('/:id',         updateUser);
+router.patch('/:id/password', updatePassword);
+router.delete('/:id',      authorize(UserRole.ADMIN), deleteUser);
+router.post('/:id/avatar', uploadAvatar);
+export default router;

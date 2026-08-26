@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { register, login, refreshToken, logout, me, forgotPassword, resetPassword, verifyEmail } from '../controllers/auth.controller';
+import { authenticate } from '../middleware/auth';
+import { authLimiter } from '../middleware/rateLimiter';
+const router = Router();
+router.post('/register',          authLimiter, register);
+router.post('/login',             authLimiter, login);
+router.post('/refresh',           refreshToken);
+router.post('/logout',            authenticate, logout);
+router.get('/me',                 authenticate, me);
+router.post('/forgot-password',   authLimiter, forgotPassword);
+router.post('/reset-password',    authLimiter, resetPassword);
+router.get('/verify-email/:token', verifyEmail);
+export default router;

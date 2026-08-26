@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { getInspections, getInspection, createInspection, updateInspection, completeInspection, deleteInspection } from '../controllers/inspections.controller';
+import { authenticate } from '../middleware/auth';
+const router = Router();
+router.use(authenticate);
+router.get('/',             getInspections);
+router.get('/:id',          getInspection);
+router.post('/',            createInspection);
+router.put('/:id',          updateInspection);
+router.patch('/:id/complete', completeInspection);
+router.delete('/:id',       deleteInspection);
+export default router;

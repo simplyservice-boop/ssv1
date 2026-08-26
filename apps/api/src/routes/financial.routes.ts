@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import express from 'express';
+import { getTransactions, getTransaction, createTransaction, getFinancialSummary, createPaymentIntent, handleWebhook } from '../controllers/financial.controller';
+import { authenticate } from '../middleware/auth';
+const router = Router();
+router.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+router.use(authenticate);
+router.get('/transactions',       getTransactions);
+router.get('/transactions/:id',   getTransaction);
+router.post('/transactions',      createTransaction);
+router.get('/summary',            getFinancialSummary);
+router.post('/payment-intent',    createPaymentIntent);
+export default router;

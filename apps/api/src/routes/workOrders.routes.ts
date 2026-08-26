@@ -1,0 +1,15 @@
+import { Router } from 'express';
+import { getWorkOrders, getWorkOrder, createWorkOrder, updateWorkOrder, deleteWorkOrder, assignWorkOrder, updateWorkOrderStatus, addComment, getComments } from '../controllers/workOrders.controller';
+import { authenticate } from '../middleware/auth';
+const router = Router();
+router.use(authenticate);
+router.get('/',                 getWorkOrders);
+router.get('/:id',              getWorkOrder);
+router.post('/',                createWorkOrder);
+router.put('/:id',              updateWorkOrder);
+router.delete('/:id',           deleteWorkOrder);
+router.patch('/:id/assign',     assignWorkOrder);
+router.patch('/:id/status',     updateWorkOrderStatus);
+router.get('/:id/comments',     getComments);
+router.post('/:id/comments',    addComment);
+export default router;
