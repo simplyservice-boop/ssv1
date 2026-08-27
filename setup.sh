@@ -184,9 +184,9 @@ cat > .env << ENVEOF
 # ── Application ──────────────────────────────────────────────
 NODE_ENV=production
 PORT=4000
-API_URL=http://localhost:4000
-WEB_URL=http://localhost
-CORS_ORIGINS=http://localhost
+API_URL=https://ssv1-backend.onrender.com
+WEB_URL=https://ssv1-iodt.onrender.com
+CORS_ORIGINS=http://localhost:5173,http://localhost:4173,http://localhost:3000,http://localhost:4000,http://localhost,https://ssv1-iodt.onrender.com
 
 # ── Database ─────────────────────────────────────────────────
 DATABASE_URL=postgresql://simply_user:simply_pass@postgres:5432/simply_service_db
@@ -227,7 +227,7 @@ EMAIL_FROM=noreply@simplyservice.io
 EMAIL_FROM_NAME=Simply Service
 
 # ── Socket.io ────────────────────────────────────────────────
-SOCKET_CORS_ORIGIN=http://localhost
+SOCKET_CORS_ORIGIN=https://ssv1-iodt.onrender.com
 ENVEOF
 
 cat > .gitignore << 'EOF'
@@ -923,9 +923,9 @@ const req = (key: string): string => {
 export const config = {
   env: opt('NODE_ENV', 'development'),
   port: parseInt(opt('PORT', '4000'), 10),
-  apiUrl: opt('API_URL', 'http://localhost:4000'),
-  webUrl: opt('WEB_URL', 'http://localhost'),
-  corsOrigins: opt('CORS_ORIGINS', 'http://localhost').split(','),
+  apiUrl: opt('API_URL', 'https://ssv1-backend.onrender.com'),
+  webUrl: opt('WEB_URL', 'https://ssv1-iodt.onrender.com'),
+  corsOrigins: opt('CORS_ORIGINS', 'http://localhost:5173,http://localhost:4173,http://localhost:3000,http://localhost:4000,http://localhost,https://ssv1-iodt.onrender.com').split(','),
   isDev: opt('NODE_ENV', 'development') === 'development',
   isProd: opt('NODE_ENV', 'development') === 'production',
   db: { url: req('DATABASE_URL') },
@@ -3061,8 +3061,8 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': { target: 'http://localhost:4000', changeOrigin: true },
-      '/socket.io': { target: 'http://localhost:4000', ws: true, changeOrigin: true },
+      '/api': { target: 'https://ssv1-backend.onrender.com', changeOrigin: true },
+      '/socket.io': { target: 'https://ssv1-backend.onrender.com', ws: true, changeOrigin: true },
     },
   },
   build: { outDir: 'dist', sourcemap: false },

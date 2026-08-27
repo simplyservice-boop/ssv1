@@ -9,15 +9,15 @@ const req = (key: string): string => {
   return v;
 };
 
-const defaultCorsOrigins = 'http://localhost:5173,http://localhost:4173,http://localhost:3000,http://localhost:4000,http://localhost';
+const defaultCorsOrigins = 'http://localhost:5173,http://localhost:4173,http://localhost:3000,http://localhost:4000,http://localhost,https://ssv1-iodt.onrender.com';
 const frontendUrl = opt('FRONTEND_URL');
 const corsOriginsFromEnv = opt('CORS_ORIGINS', defaultCorsOrigins);
 
 export const config = {
   env: opt('NODE_ENV', 'development'),
   port: parseInt(opt('PORT', '4000'), 10),
-  apiUrl: opt('API_URL', 'http://localhost:4000'),
-  webUrl: opt('WEB_URL', 'http://localhost:5173'),
+  apiUrl: opt('API_URL', 'https://ssv1-backend.onrender.com'),
+  webUrl: opt('WEB_URL', 'https://ssv1-iodt.onrender.com'),
   corsOrigins: Array.from(new Set([
     ...corsOriginsFromEnv.split(',').map((value) => value.trim()).filter(Boolean),
     ...(frontendUrl ? [frontendUrl] : []),

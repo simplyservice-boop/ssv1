@@ -13,8 +13,8 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     proxy: {
-      '/api': { target: 'http://localhost:4000', changeOrigin: true },
-      '/socket.io': { target: 'http://localhost:4000', ws: true, changeOrigin: true },
+      '/api': { target: 'https://ssv1-backend.onrender.com', changeOrigin: true },
+      '/socket.io': { target: 'https://ssv1-backend.onrender.com', ws: true, changeOrigin: true },
     },
   },
   preview: {
