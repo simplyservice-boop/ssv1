@@ -8,6 +8,17 @@ const Login          = lazy(() => import('./pages/Login'));
 const Register       = lazy(() => import('./pages/Register'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
+const OwnerDashboard = lazy(() => import('./pages/OwnerDashboard'));
+const ManagerDashboard= lazy(() => import('./pages/ManagerDashboard'));
+const TenantDashboard= lazy(() => import('./pages/TenantDashboard'));
+const ContractorDashboard = lazy(() => import('./pages/ContractorDashboard'));
+const VendorDashboard = lazy(() => import('./pages/VendorDashboard'));
+const UtilityDashboard = lazy(() => import('./pages/UtilityDashboard'));
+const InsuranceDashboard = lazy(() => import('./pages/InsuranceDashboard'));
+const FinanceDashboard = lazy(() => import('./pages/FinanceDashboard'));
+const EnterpriseDashboard = lazy(() => import('./pages/EnterpriseDashboard'));
+const MunicipalDashboard = lazy(() => import('./pages/MunicipalDashboard'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Properties     = lazy(() => import('./pages/Properties'));
 const PropertyDetail = lazy(() => import('./pages/PropertyDetail'));
 const WorkOrders     = lazy(() => import('./pages/WorkOrders'));
@@ -43,6 +54,17 @@ export default function App() {
           <Route path="/forgot-password"element={<ForgotPassword />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard"    element={<Dashboard />} />
+            <Route path="/owner"        element={<OwnerDashboard />} />
+            <Route path="/manager"      element={<ManagerDashboard />} />
+            <Route path="/tenant"       element={<TenantDashboard />} />
+            <Route path="/contractor"   element={<ContractorDashboard />} />
+            <Route path="/vendor"       element={<VendorDashboard />} />
+            <Route path="/utility"      element={<UtilityDashboard />} />
+            <Route path="/insurance"    element={<InsuranceDashboard />} />
+            <Route path="/finance"      element={<FinanceDashboard />} />
+            <Route path="/enterprise"   element={<EnterpriseDashboard />} />
+            <Route path="/municipal"    element={<MunicipalDashboard />} />
+            <Route path="/admin"        element={<AdminDashboard />} />
             <Route path="/properties"   element={<Properties />} />
             <Route path="/properties/:id" element={<PropertyDetail />} />
             <Route path="/work-orders"  element={<WorkOrders />} />

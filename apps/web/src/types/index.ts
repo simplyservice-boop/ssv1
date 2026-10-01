@@ -3,7 +3,7 @@ export interface User {
   role: UserRole; phone?: string; avatarUrl?: string; bio?: string;
   isVerified: boolean; isActive: boolean; createdAt: string;
 }
-export type UserRole = 'OWNER'|'MANAGER'|'TENANT'|'CONTRACTOR'|'VENDOR'|'ADMIN';
+export type UserRole = 'OWNER'|'MANAGER'|'TENANT'|'CONTRACTOR'|'VENDOR'|'UTILITY_PROVIDER'|'INSURANCE_PARTNER'|'FINANCIAL_INSTITUTION'|'ENTERPRISE'|'MUNICIPAL_PARTNER'|'ADMIN';
 
 export interface Property {
   id: string; name: string; address: string; city: string; state: string; zip: string;

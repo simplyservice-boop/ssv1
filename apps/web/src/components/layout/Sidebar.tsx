@@ -10,6 +10,17 @@ import api from '../../lib/api';
 
 const links = [
   { to:'/dashboard',     icon:LayoutDashboard, label:'Dashboard',    roles:['OWNER','MANAGER','TENANT','CONTRACTOR','ADMIN'] },
+  { to:'/owner',         icon:LayoutDashboard, label:'Owner Hub',    roles:['OWNER'] },
+  { to:'/manager',      icon:LayoutDashboard, label:'Manager Hub',  roles:['MANAGER'] },
+  { to:'/tenant',       icon:LayoutDashboard, label:'Tenant Hub',   roles:['TENANT'] },
+  { to:'/contractor',   icon:LayoutDashboard, label:'Contractor Hub', roles:['CONTRACTOR'] },
+  { to:'/vendor',       icon:LayoutDashboard, label:'Vendor Hub',   roles:['VENDOR'] },
+  { to:'/utility',      icon:LayoutDashboard, label:'Utility Hub',  roles:['UTILITY_PROVIDER'] },
+  { to:'/insurance',    icon:LayoutDashboard, label:'Insurance Hub', roles:['INSURANCE_PARTNER'] },
+  { to:'/finance',      icon:LayoutDashboard, label:'Finance Hub',  roles:['FINANCIAL_INSTITUTION'] },
+  { to:'/enterprise',   icon:LayoutDashboard, label:'Enterprise Hub', roles:['ENTERPRISE'] },
+  { to:'/municipal',    icon:LayoutDashboard, label:'Municipal Hub', roles:['MUNICIPAL_PARTNER'] },
+  { to:'/admin',        icon:LayoutDashboard, label:'Admin Hub',    roles:['ADMIN'] },
   { to:'/properties',    icon:Building2,       label:'Properties',   roles:['OWNER','MANAGER','ADMIN'] },
   { to:'/work-orders',   icon:Wrench,          label:'Work Orders',  roles:['OWNER','MANAGER','TENANT','CONTRACTOR','ADMIN'] },
   { to:'/financial',     icon:DollarSign,      label:'Financial',    roles:['OWNER','MANAGER','ADMIN'] },
